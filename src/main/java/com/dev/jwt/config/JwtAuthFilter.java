@@ -2,6 +2,9 @@ package com.dev.jwt.config;
 
 import java.io.IOException;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter{
     
     private JwtService jwtService;
+    private  UserDetailsService userDetailsService;
 
     public JwtAuthFilter() {
     }
@@ -33,6 +37,10 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
                 jwt = authHeader.substring(7);
                 userEmail = jwtService.extractUsername(jwt);
+
+                if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                }
     }
 
     
